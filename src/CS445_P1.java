@@ -6,15 +6,17 @@
  *		assignment: program 1
  *		date last modified: 4/3/2017
  * 
- *		purpose: This program takes a filename from the command line,
+ *		purpose: This program opens a file called "coordinates.txt",
  *		parses its contents, and draws the lines, circles, and ellipses
  *		described.
  ****************************************************************/
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -40,22 +42,23 @@ public class CS445_P1 {
 		
 		ArrayList<Shape> shapes = new ArrayList<>();
 		
-		shapes.add(new Shape(200,50,100, 200, true));
-		shapes.add(new Shape(50,50,300, 300, true));
-		shapes.add(new Shape(500,300,70));
-		shapes.add(new Shape(225,370,35, 75, false));
+		parseFile("coordinates.txt", shapes);
 		
-		while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+		while (!Display.isCloseRequested()) {
+			// exit when escape key is pressed
+			if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+				break;
+			}
 			
-			Display.setTitle(String.format("Mouse pos: %d, %d", Mouse.getX(), Mouse.getY()));
-			
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			
+			// draw all of the shapes
 			shapes.forEach((shape) -> {
 				shape.draw();
 			});
 			
 			Display.update();
+			// a framerate of 60 is low enough to make the program a lot less
+			// cpu-intensive but still fast enough to be able to register key
+			// presses
 			Display.sync(60);
 		}
 		
@@ -71,5 +74,63 @@ public class CS445_P1 {
 		int height = Display.getHeight();
 		
 		Display.setLocation(scrWidth/2 - width/2, scrHeight/2 - height/2);
+	}
+	
+	// method: parseFile
+	// purpose: this static methodparse the file with the given relative path and
+	// create described Shape instances
+	private static void parseFile(String fName, ArrayList<Shape> shapes) {
+		String line;
+		String[] lineParts, coord0, coord1;
+		Scanner scan;
+		
+		try {
+			scan = new Scanner(new File (fName));
+			
+			while (scan.hasNextLine()) {
+				line = scan.nextLine();
+				
+				if (line != null && line.length() > 0) {
+					lineParts = line.split(" ");
+					
+					try {
+						if (lineParts.length == 3) {
+							switch (lineParts[0]) {
+								case "c":
+									coord0 = lineParts[1].split(",");
+									shapes.add(new Shape(Float.parseFloat(coord0[0]),
+											  Float.parseFloat(coord0[1]),
+											  Float.parseFloat(lineParts[2])));
+									break;
+								case "e":
+									coord0 = lineParts[1].split(",");
+									coord1 = lineParts[2].split(",");
+									shapes.add(new Shape(Float.parseFloat(coord0[0]),
+											  Float.parseFloat(coord0[1]),
+											  Float.parseFloat(coord1[0]),
+											  Float.parseFloat(coord1[1]), false));
+									break;
+								case "l":
+									coord0 = lineParts[1].split(",");
+									coord1 = lineParts[2].split(",");
+									shapes.add(new Shape(Float.parseFloat(coord0[0]),
+											  Float.parseFloat(coord0[1]),
+											  Float.parseFloat(coord1[0]),
+											  Float.parseFloat(coord1[1]), true));
+									break;
+								default:
+									throw(new Exception());
+							}
+						} else {
+							throw(new Exception());
+						}
+					} catch (Exception e) {
+						System.err.printf("Could not parse line: %s\n", line);
+					}
+				}
+			}
+		} catch (FileNotFoundException ex) {
+			System.err.printf("File %s does not exist...\n", fName);
+		}
 	}
 }

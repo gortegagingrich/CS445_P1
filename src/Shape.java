@@ -6,7 +6,7 @@
  *		assignment: program 1
  *		date last modified: 4/3/2017
  * 
- *		purpose: This program takes a filename from the command line,
+ *		purpose: This program opens a file called "coordinates.txt",
  *		parses its contents, and draws the lines, circles, and ellipses
  *		described.
  ****************************************************************/
