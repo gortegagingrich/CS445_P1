@@ -22,31 +22,44 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 public class CS445_P1 {
+	private volatile static boolean pressed = false;
 
 	// method: main
 	// purpose: this static method is called when the program is run.
 	// It creates the window, initializses opengl, and contains the main loop
 	public static void main(String[] args) throws LWJGLException {
-		// TODO code application logic here
+		// window stuff
 		Display.setDisplayMode(new DisplayMode(640,480));
 		Display.setTitle("Project 1");
 		Display.create();
 		center();
 		
-		GL11.glPointSize(1);
 		GL11.glClearColor(0f,0f,0f,1f);
-		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, 640, 0, 480, 1, -1);
 		
 		ArrayList<Shape> shapes = new ArrayList<>();
-		
 		parseFile("coordinates.txt", shapes);
+		
+		// keyboard input stuff
+		// I have this handled in a separate thread to make it less likely for
+		// the frame rate to affect whether or not keyboard inputs are read
+		Thread thread = new Thread(() -> {
+			while(!pressed) {
+				try {
+					pressed = Keyboard.isKeyDown(Keyboard.KEY_ESCAPE);
+				} catch (IllegalStateException e) {
+					// thrown by isKeyDown() after display is destroyed
+					return;
+				}
+			}
+		});
+		thread.start();
 		
 		while (!Display.isCloseRequested()) {
 			// exit when escape key is pressed
-			if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+			if (pressed) {
 				break;
 			}
 			
