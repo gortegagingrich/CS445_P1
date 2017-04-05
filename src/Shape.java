@@ -19,12 +19,12 @@ public class Shape {
 	private static enum Type {LINE, CIRCLE, ELLIPSE};
 	
 	private final Type type;
-	ArrayList<float[]> points;
+	ArrayList<int[]> points;
 	
 	// constructor: 3 floats
 	// purpose: creates a Shape instance of type circle with the given center x,
 	// center y, and radius
-	public Shape(float cX, float cY, float r) {
+	public Shape(int cX, int cY, int r) {
 		points = new ArrayList<>();
 		
 		makeEllipse(cX, cY, r, r);
@@ -36,7 +36,7 @@ public class Shape {
 	// purpose: creates a Shape instance of type ellipse, treating the first two
 	// floats as the center and the next two as the width and height, or of type
 	// line, treating the first two floats as point A and the next as point B
-	public Shape(float float0, float float1, float float2, float float3, boolean line) {
+	public Shape(int float0, int float1, int float2, int float3, boolean line) {
 		points = new ArrayList<>();
 		
 		if (line) { // makes it a line
@@ -67,7 +67,7 @@ public class Shape {
 				GL11.glColor3f(0, 0, 1);
 		}
 		
-		for (float[] point: points) {
+		for (int[] point: points) {
 			if (point != null && point.length == 2) {
 				GL11.glVertex2f(point[0], point[1]);
 			}
@@ -79,7 +79,7 @@ public class Shape {
 	// method: makeEllipse
 	// purpose: this method adds every required point to create an ellipse with
 	// the given center, width, and height to the ArrayList points
-	private void makeEllipse(float cX, float cY, float width, float height) {
+	private void makeEllipse(int cX, int cY, int width, int height) {
 		double circ, dir, dDir;
 		
 		dir = 0;
@@ -87,8 +87,8 @@ public class Shape {
 		dDir = (2 * Math.PI) / circ / 2;
 		
 		while (dir <= (2 * Math.PI)) {
-			points.add(new float[] {cX + (float)(width * Math.cos(dir)),
-				cY + (float)(height * Math.sin(dir))});
+			points.add(new int[] {cX + (int)(width * Math.cos(dir)),
+				cY + (int)(height * Math.sin(dir))});
 			dir += dDir;
 		}
 	}
@@ -96,20 +96,97 @@ public class Shape {
 	// method: makeLine
 	// purpose: this method adds every required point to create a line with the
 	// given endpoints to the ArrayList points
-	private void makeLine(float x1, float y1, float x2, float y2) {
-		float dX, dY;
-		float distance = distance(x1, y1, x2, y2);
+	// The points are determined using a midpoint line algorithm
+	private void makeLine(int x0, int y0, int x1, int y1) {
+		int x, y, dx, dy, p;
+		
+		if (x0 > x1) {
+			x = x1;
+			y = y1;
+			x1 = x0;
+		} else {
+			x = x0;
+			y = y0;
+		}
+		
+		dx = x1 - x0;
+		dy = y1 - y0;
+		
+		if (x0==x1 && y0 > y1) {
+			int temp = y0;
+			y0 = y1;
+			y1 = temp;
+			y = y0;
+			dy *= -1;
+			
+			System.out.println("reached");
+		}
+		
+		points.add(new int[]{x,y});
+		if (x0 == x1 || 1.0*dy/dx > 1) {
+			p = 2 * dx - dy;
 
-		dX = (x2 - x1) / distance;
-		dY = (y2 - y1) / distance;
+			while (y < y1) {
+				y++;
 
-		float distanceMoved = 0;
+				if (p < 0) {
+					p += 2 * dx;
+				} else {
+					x++;
+					p += 2 * (dx - dy);
+				}
 
-		while (distanceMoved <= distance) {
-			points.add(new float[] {x1, y1});
-			x1 += dX;
-			y1 += dY;
-			distanceMoved += Math.sqrt(dX * dX + dY * dY);
+				points.add(new int[]{x,y});
+			}
+		} else if (1.0*dy/dx >= 0) {
+			p = 2 * dy - dx;
+
+			while (x < x1) {
+				x++;
+
+				if (p < 0) {
+					p += 2 * dy;
+				} else {
+					y++;
+					p += 2 * (dy - dx);
+				}
+
+				points.add(new int[]{x,y});
+			}
+		} else if (1.0*dy/dx >= -1) {
+			dy = Math.abs(dy);
+			
+			p = 2 * dy - dx;
+			
+			while (x < x1) {
+				x++;
+				
+				if (p < 0) {
+					p += 2 * dy;
+				} else {
+					y--;
+					p += 2 * (dy - dx);
+				}
+				
+				points.add(new int[]{x,y});
+			}
+		} else {
+			dy = Math.abs(dy);
+			
+			p = 2 * dx - dy;
+
+			while (y > y1) {
+				y--;
+
+				if (p < 0) {
+					p += 2 * dx;
+				} else {
+					x++;
+					p += 2 * (dy - dx);
+				}
+
+				points.add(new int[]{x,y});
+			}
 		}
 	}
 	

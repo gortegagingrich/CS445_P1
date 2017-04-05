@@ -111,25 +111,25 @@ public class CS445_P1 {
 							switch (lineParts[0]) {
 								case "c":
 									coord0 = lineParts[1].split(",");
-									shapes.add(new Shape(Float.parseFloat(coord0[0]),
-											  Float.parseFloat(coord0[1]),
-											  Float.parseFloat(lineParts[2])));
+									shapes.add(new Shape(Integer.parseInt(coord0[0]),
+											  Integer.parseInt(coord0[1]),
+											  Integer.parseInt(lineParts[2])));
 									break;
 								case "e":
 									coord0 = lineParts[1].split(",");
 									coord1 = lineParts[2].split(",");
-									shapes.add(new Shape(Float.parseFloat(coord0[0]),
-											  Float.parseFloat(coord0[1]),
-											  Float.parseFloat(coord1[0]),
-											  Float.parseFloat(coord1[1]), false));
+									shapes.add(new Shape(Integer.parseInt(coord0[0]),
+											  Integer.parseInt(coord0[1]),
+											  Integer.parseInt(coord1[0]),
+											  Integer.parseInt(coord1[1]), false));
 									break;
 								case "l":
 									coord0 = lineParts[1].split(",");
 									coord1 = lineParts[2].split(",");
-									shapes.add(new Shape(Float.parseFloat(coord0[0]),
-											  Float.parseFloat(coord0[1]),
-											  Float.parseFloat(coord1[0]),
-											  Float.parseFloat(coord1[1]), true));
+									shapes.add(new Shape(Integer.parseInt(coord0[0]),
+											  Integer.parseInt(coord0[1]),
+											  Integer.parseInt(coord1[0]),
+											  Integer.parseInt(coord1[1]), true));
 									break;
 								default:
 									throw(new Exception());
