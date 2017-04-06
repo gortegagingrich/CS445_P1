@@ -79,18 +79,58 @@ public class Shape {
 	// method: makeEllipse
 	// purpose: this method adds every required point to create an ellipse with
 	// the given center, width, and height to the ArrayList points
-	private void makeEllipse(int cX, int cY, int width, int height) {
-		double circ, dir, dDir;
+	private void makeEllipse(int cx, int cy, int rx, int ry) {
+		int p, x, y, px, py;
 		
-		dir = 0;
-		circ = 2 * Math.PI * Math.sqrt((width * width + height * height) / 2);
-		dDir = (2 * Math.PI) / circ / 2;
+		x = 0;
+		y = ry;
+		px = 0;
+		py = 2 * rx * rx * y;
 		
-		while (dir <= (2 * Math.PI)) {
-			points.add(new int[] {cX + (int)(width * Math.cos(dir)),
-				cY + (int)(height * Math.sin(dir))});
-			dir += dDir;
+		ellipsePlotPoints(cx,cy,x,y);
+		
+		// region 1
+		p = (int)Math.round(ry*ry - (rx*rx*ry) + (0.25*rx*rx));
+		
+		while (px < py) {
+			x++;
+			px += 2 * ry * ry;
+			
+			if (p < 0) {
+				p += ry * ry + px;
+			} else {
+				y--;
+				py -= 2 * rx * rx;
+				p += ry * ry + px - py;
+			}
+			
+			ellipsePlotPoints(cx,cy,x,y);
 		}
+		
+		// region 2
+		p = (int)Math.round(ry*ry*(x+0.5) * (x+0.5) + rx*rx*(y-1)*(y-1) - rx*rx*ry*ry);
+		
+		while (y > 0) {
+			y--;
+			py -= rx*rx*2;
+			
+			if (p > 0) {
+				p += rx*rx-py;
+			} else {
+				x++;
+				px += 2*ry*ry;
+				p += rx*rx - py + px;
+			}
+			
+			ellipsePlotPoints(cx,cy,x,y);
+		}
+	}
+	
+	private void ellipsePlotPoints(int cx, int cy, int x, int y) {
+		points.add(new int[]{cx + x, cy + y});
+		points.add(new int[]{cx - x, cy + y});
+		points.add(new int[]{cx + x, cy - y});
+		points.add(new int[]{cx - x, cy - y});
 	}
 	
 	// method: makeLine
