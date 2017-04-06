@@ -56,11 +56,8 @@ public class Main {
 	// method: render
 	// purpose: This method contains loop that draws shapes to the window
 	private void render() {
-		while (!Display.isCloseRequested()) {
-			// exit when escape key is pressed
-			if (escapePressed) {
-				break;
-			}
+		while (!Display.isCloseRequested() && !escapePressed) {
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 			// draw all of the shapes
 			shapes.forEach((shape) -> {
