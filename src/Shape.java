@@ -5,15 +5,15 @@
  *		class: CS 445 - Computer Graphics
  *
  *		assignment: program 1
- *		date last modified: 4/6/2017
+ *		date last modified: 4/10/2017
  *
  *		purpose: This class describes an object that contains the
  *		information needed to draw a given shape pixel by pixel.
  *		The individual pixels are determined on creation using
- *		required algorithms and stored in a list.
- *		It then will iterate through that list and draw each pixel
- *		one-by-one without having to perform the same calculations
- *		over and over again.
+ *		required algorithms and stored in a list to avoid performing
+ *		the same calculations every time the window refreshes.
+ *		When it comes time to draw the shape, it iterates through
+ *		the list of points and draws each with glVector2f to.
  *************************************************************** */
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class Shape {
 	// given endpoints to the ArrayList points
 	// The points are determined using a midpoint line algorithm
 	private void makeLine(int x0, int y0, int x1, int y1) {
-		int x, y, dx, dy, p;
+		int x, y, dx, dy, d;
 
 		if (x0 > x1) {
 			x = x1;
@@ -146,31 +146,31 @@ public class Shape {
 
 		points.add(new int[]{x, y});
 		if (x0 == x1 || 1.0 * dy / dx > 1) {
-			p = 2 * dx - dy;
+			d = 2 * dx - dy;
 
 			while (y < y1) {
 				y++;
 
-				if (p < 0) {
-					p += 2 * dx;
+				if (d < 0) {
+					d += 2 * dx;
 				} else {
 					x++;
-					p += 2 * (dx - dy);
+					d += 2 * (dx - dy);
 				}
 
 				points.add(new int[]{x, y});
 			}
 		} else if (1.0 * dy / dx >= 0) {
-			p = 2 * dy - dx;
+			d = 2 * dy - dx;
 
 			while (x < x1) {
 				x++;
 
-				if (p < 0) {
-					p += 2 * dy;
+				if (d < 0) {
+					d += 2 * dy;
 				} else {
 					y++;
-					p += 2 * (dy - dx);
+					d += 2 * (dy - dx);
 				}
 
 				points.add(new int[]{x, y});
@@ -178,16 +178,16 @@ public class Shape {
 		} else if (1.0 * dy / dx >= -1) {
 			dy = Math.abs(dy);
 
-			p = 2 * dy - dx;
+			d = 2 * dy - dx;
 
 			while (x < x1) {
 				x++;
 
-				if (p < 0) {
-					p += 2 * dy;
+				if (d < 0) {
+					d += 2 * dy;
 				} else {
 					y--;
-					p += 2 * (dy - dx);
+					d += 2 * (dy - dx);
 				}
 
 				points.add(new int[]{x, y});
@@ -195,16 +195,16 @@ public class Shape {
 		} else {
 			dy = Math.abs(dy);
 
-			p = 2 * dx - dy;
+			d = 2 * dx - dy;
 
 			while (y > y1) {
 				y--;
 
-				if (p < 0) {
-					p += 2 * dx;
+				if (d < 0) {
+					d += 2 * dx;
 				} else {
 					x++;
-					p += 2 * (dy - dx);
+					d += 2 * (dy - dx);
 				}
 
 				points.add(new int[]{x, y});

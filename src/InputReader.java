@@ -5,10 +5,16 @@
  *		class: CS 445 - Computer Graphics
  *
  *		assignment: program 1
- *		date last modified: 4/6/2017
+ *		date last modified: 4/10/2017
  *
  *		purpose: This is a runnable class that allows for keyboard
  *		input checking to be handled in a separate thread.
+ * 
+ *		Overview of key bindings:
+ *		escape:	quit program
+ *		1:			cycle line color
+ *		2:			cycle ellipse color
+ *		3:			cycle circle color
  *************************************************************** */
 
 import org.lwjgl.input.Keyboard;
